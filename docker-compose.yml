@@ -1,0 +1,51 @@
+version: '3.4'
+
+#Docker Networks
+networks:
+  nsfw-network:
+    driver: bridge
+
+services:
+  nginx:
+    build:
+      context : .
+      dockerfile: nginx/Dockerfile
+    depends_on:
+      - api_1
+      - api_2
+      - api_3
+    ports:
+      - "5100:5100"
+    restart: always
+    networks:
+      - nsfw-network
+
+  api_1: &api
+    build: .
+    build:
+      context: .
+      dockerfile: nsfw1/Dockerfile
+    container_name: api_1
+    ports:
+      - "17010:8080"
+    restart: always
+    networks:
+      - nsfw-network
+
+  api_2:
+    <<: *api
+    container_name: api_2
+    ports:
+      - "17011:8080"
+    restart: always
+    networks:
+      - nsfw-network
+
+  api_3:
+    <<: *api
+    container_name: api_3
+    ports:
+      - "17012:8080"
+    restart: always
+    networks:
+      - nsfw-network
